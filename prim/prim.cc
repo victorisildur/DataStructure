@@ -1,4 +1,3 @@
-
 #include <iostream>
 using namespace std;
 
@@ -8,7 +7,7 @@ class adjListGraph {
       adjListGraph(int vSize, const TypeOfVer d[]);
       ~adjListGraph();
       bool insert(int u,int v, TypeOfEdge w);
-      void prim();
+      TypeOfEdge prim(TypeOfEdge noEdge);
    private:
       struct edgeNode 
       {
@@ -77,9 +76,46 @@ bool adjListGraph<TypeOfVer,TypeOfEdge>::insert(int u,int v,TypeOfEdge w)
 }
 
 template <class TypeOfVer, class TypeOfEdge>
-void adjListGraph<TypeOfVer,TypeOfEdge>::prim()
+TypeOfEdge adjListGraph<TypeOfVer,TypeOfEdge>::prim(TypeOfEdge noEdge)
 {
+   bool *flag = new bool[Vers];
+   int *startNode = new int[Vers];
+   TypeOfEdge* lowCost = new TypeOfEdge[Vers];
+   //initial
+   for(int i=1;i<Vers;i++)
+   {
+      flag[i] = false;
+      lowCost[i] = noEdge;
+   }
+
+   int start = 0;
+   edgeNode *p;
+   TypeOfEdge min;
+   TypeOfEdge treeWeightSum = 0;
+   for(int i=0;i<Vers;i++)
+   {
+      for(p=verList[start].head; p!= NULL ;p=p->next)
+         if( !flag[p->end] && lowCost[p->end] > p->weight )
+         {
+            lowCost[p->end] = p->weight;
+            startNode[p->end] = start;
+         }
+      flag[start] = true;
+      min = noEdge;
+      // finding the least weight edge from U to V-U
+      for(int j=0;j<Vers;j++)
+         if(lowCost[j]<min) {
+            min = lowCost[j];
+            start = j;
+         }
+      treeWeightSum += min;
+      lowCost[start] = noEdge;
+   }
    
+   delete [] flag;
+   delete [] startNode;
+   delete [] lowCost;
+   return treeWeightSum;
 }
 
 
@@ -88,7 +124,7 @@ void adjListGraph<TypeOfVer,TypeOfEdge>::prim()
 int main()
 {
    // input vers num , construct the graph
-   int vers;
+   int vers;           
    cin>>vers;
    char *d = new char[vers];
    for(int i=0;i<vers;i++)
@@ -97,7 +133,7 @@ int main()
    }
    adjListGraph<char,int> g(vers,d);
    //input edges
-   for(int i=0;i<vers;i++)
+   for(int i=1;i<vers;i++)
    {
       char verName;
       int edgeNum;
@@ -111,5 +147,5 @@ int main()
          g.insert(verName2-'A',verName-'A',weight);
       } 
    }
-   
+   cout << g.prim(999) <<endl;
 }
