@@ -1,0 +1,23 @@
+SRC_FILES=test.cpp linkList.cpp
+OBJ_FILES=$(patsubst %.cpp, %.o, ${SRC_FILES})
+#VPATH = src
+
+CFLAGS = -c -o
+LDFLAGS = -o
+
+linkListTest: $(OBJ_FILES)
+	g++ -o linkListTest ${OBJ_FILES}
+
+#%.o:%.c
+#	g++ ${CFLAGS} -o $@ $
+MAIN_HDRS = test.h linkList.h list.h
+LINKLIST_HDRS = linkList.h list.h
+
+test.o : ${MAIN_HDRS}
+linkList.o : ${LINKLIST_HDRS}
+
+.PHONY:clean
+clean:
+	rm *.o linkListTest
+
+
